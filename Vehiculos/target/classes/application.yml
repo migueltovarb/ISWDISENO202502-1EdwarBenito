@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: vehiculos-api
+  data:
+    mongodb:
+      uri: mongodb+srv://vPv9Y8zIPF7YL8xQ:kRP6CyzmSBxfYFe0@vehiculos.oehm4tc.mongodb.net/vehiculos?retryWrites=true&w=majority
+      database: vehiculos
+  
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api/v1
+
+logging:
+  level:
+    root: INFO
+    com.vehiculos: DEBUG
+    org.springframework.data.mongodb: DEBUG
