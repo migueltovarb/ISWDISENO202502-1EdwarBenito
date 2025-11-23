@@ -1,0 +1,895 @@
+{
+	"info": {
+		"_postman_id": "cashify-api-collection",
+		"name": "Cashify API - Control de Gastos",
+		"description": "Colección completa de endpoints para la API REST de Cashify.\n\n**Base URL Local:** `http://localhost:8080/api`\n**Base URL Producción:** `https://cashify-back.onrender.com/api`\n\n## Recursos:\n- **Usuarios**: Registro, login y gestión de usuarios\n- **Categorías**: CRUD de categorías personalizadas\n- **Transacciones**: CRUD de transacciones con filtros y resúmenes\n\n## Autenticación:\nActualmente sin autenticación JWT (usar userId en requests)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "👥 Usuarios",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"userId\", jsonData.id);",
+									"    pm.environment.set(\"userApodo\", jsonData.apodo);",
+									"    console.log(\"Usuario logueado: \" + jsonData.apodo);",
+									"    console.log(\"userId guardado: \" + jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"correo\": \"usuario@ejemplo.com\",\n    \"contrasenia\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/usuarios/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"usuarios",
+								"login"
+							]
+						},
+						"description": "Autentica un usuario con correo y contraseña.\n\n**Validaciones:**\n- Correo: formato email válido, máx 50 caracteres\n- Contraseña: entre 8 y 20 caracteres\n\n**Response:** Retorna los datos del usuario autenticado"
+					},
+					"response": [
+						{
+							"name": "Login Exitoso",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"correo\": \"usuario@ejemplo.com\",\n    \"contrasenia\": \"password123\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/usuarios/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"usuarios",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"id\": \"507f1f77bcf86cd799439011\",\n    \"apodo\": \"juan_perez\",\n    \"correo\": \"usuario@ejemplo.com\",\n    \"totalTransacciones\": 15,\n    \"totalCategorias\": 5\n}"
+						},
+						{
+							"name": "Credenciales Incorrectas",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"correo\": \"usuario@ejemplo.com\",\n    \"contrasenia\": \"wrongpassword\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/usuarios/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"usuarios",
+										"login"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"timestamp\": \"2025-11-22T10:30:00\",\n    \"status\": 401,\n    \"error\": \"No autorizado\",\n    \"message\": \"Correo electrónico o contraseña incorrectos\",\n    \"path\": \"/api/usuarios/login\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Crear Usuario (Registro)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"userId\", jsonData.id);",
+									"    pm.environment.set(\"userApodo\", jsonData.apodo);",
+									"    console.log(\"Usuario creado: \" + jsonData.apodo);",
+									"    console.log(\"userId guardado: \" + jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"apodo\": \"juan_perez\",\n    \"correo\": \"juan@ejemplo.com\",\n    \"contrasenia\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/usuarios",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"usuarios"
+							]
+						},
+						"description": "Crea un nuevo usuario en el sistema.\n\n**Validaciones:**\n- Apodo: entre 3 y 50 caracteres, único\n- Correo: formato email válido, único\n- Contraseña: mínimo 6 caracteres"
+					},
+					"response": [
+						{
+							"name": "Usuario Creado",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"apodo\": \"juan_perez\",\n    \"correo\": \"juan@ejemplo.com\",\n    \"contrasenia\": \"password123\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/usuarios",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"id\": \"507f1f77bcf86cd799439011\",\n    \"apodo\": \"juan_perez\",\n    \"correo\": \"juan@ejemplo.com\",\n    \"totalTransacciones\": 0,\n    \"totalCategorias\": 0\n}"
+						}
+					]
+				},
+				{
+					"name": "Obtener Todos los Usuarios",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/usuarios",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"usuarios"
+							]
+						},
+						"description": "Retorna la lista de todos los usuarios registrados."
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Usuario por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/usuarios/{{userId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"usuarios",
+								"{{userId}}"
+							]
+						},
+						"description": "Obtiene los datos de un usuario específico por su ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Usuario por Apodo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/usuarios/apodo/juan_perez",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"usuarios",
+								"apodo",
+								"juan_perez"
+							]
+						},
+						"description": "Busca un usuario por su apodo único."
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Usuario",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"apodo\": \"juan_actualizado\",\n    \"correo\": \"juan_nuevo@ejemplo.com\",\n    \"contrasenia\": \"newpassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/usuarios/{{userId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"usuarios",
+								"{{userId}}"
+							]
+						},
+						"description": "Actualiza los datos de un usuario existente."
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Usuario",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/usuarios/{{userId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"usuarios",
+								"{{userId}}"
+							]
+						},
+						"description": "Elimina un usuario del sistema."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para gestión de usuarios, registro y autenticación."
+		},
+		{
+			"name": "📁 Categorías",
+			"item": [
+				{
+					"name": "Crear Categoría",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"categoriaId\", jsonData.id);",
+									"    console.log(\"Categoría creada: \" + jsonData.nombre);",
+									"    console.log(\"categoriaId guardado: \" + jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nombre\": \"Alimentación\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/categorias/usuario/{{userId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"categorias",
+								"usuario",
+								"{{userId}}"
+							]
+						},
+						"description": "Crea una nueva categoría para un usuario.\n\n**Validación:** El nombre no puede estar vacío y debe ser único por usuario."
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Categorías por Usuario",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/categorias/usuario/{{userId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"categorias",
+								"usuario",
+								"{{userId}}"
+							]
+						},
+						"description": "Retorna todas las categorías de un usuario específico."
+					},
+					"response": [
+						{
+							"name": "Categorías del Usuario",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/categorias/usuario/{{userId}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"categorias",
+										"usuario",
+										"{{userId}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": \"507f1f77bcf86cd799439012\",\n        \"nombre\": \"Alimentación\",\n        \"userId\": \"507f1f77bcf86cd799439011\"\n    },\n    {\n        \"id\": \"507f1f77bcf86cd799439013\",\n        \"nombre\": \"Transporte\",\n        \"userId\": \"507f1f77bcf86cd799439011\"\n    },\n    {\n        \"id\": \"507f1f77bcf86cd799439014\",\n        \"nombre\": \"Entretenimiento\",\n        \"userId\": \"507f1f77bcf86cd799439011\"\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "Obtener Categoría por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/categorias/{{categoriaId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"categorias",
+								"{{categoriaId}}"
+							]
+						},
+						"description": "Obtiene una categoría específica por su ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Categoría",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nombre\": \"Comida y Bebidas\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/categorias/{{categoriaId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"categorias",
+								"{{categoriaId}}"
+							]
+						},
+						"description": "Actualiza el nombre de una categoría existente."
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Categoría",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/categorias/{{categoriaId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"categorias",
+								"{{categoriaId}}"
+							]
+						},
+						"description": "Elimina una categoría del sistema."
+					},
+					"response": []
+				}
+			],
+			"description": "Gestión de categorías personalizadas por usuario."
+		},
+		{
+			"name": "💰 Transacciones",
+			"item": [
+				{
+					"name": "Crear Transacción",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"transaccionId\", jsonData.id);",
+									"    console.log(\"Transacción creada: \" + jsonData.descripcion);",
+									"    console.log(\"transaccionId guardado: \" + jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tipoTransaccion\": \"GASTO\",\n    \"categoriaId\": \"{{categoriaId}}\",\n    \"descripcion\": \"Compra en supermercado\",\n    \"fecha\": \"2025-11-22T10:30:00\",\n    \"monto\": 45.50\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/transacciones/usuario/{{userId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"transacciones",
+								"usuario",
+								"{{userId}}"
+							]
+						},
+						"description": "Crea una nueva transacción (ingreso o gasto).\n\n**Validaciones:**\n- Tipo: INGRESO o GASTO\n- Monto: debe ser positivo\n- Fecha: obligatoria\n- Descripción: obligatoria\n- CategoríaId: debe existir"
+					},
+					"response": [
+						{
+							"name": "Gasto Creado",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"tipoTransaccion\": \"GASTO\",\n    \"categoriaId\": \"507f1f77bcf86cd799439012\",\n    \"descripcion\": \"Compra en supermercado\",\n    \"fecha\": \"2025-11-22T10:30:00\",\n    \"monto\": 45.50\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/transacciones/usuario/{{userId}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"transacciones",
+										"usuario",
+										"{{userId}}"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"id\": \"507f1f77bcf86cd799439015\",\n    \"tipoTransaccion\": \"GASTO\",\n    \"categoriaId\": \"507f1f77bcf86cd799439012\",\n    \"categoriaNombre\": \"Alimentación\",\n    \"descripcion\": \"Compra en supermercado\",\n    \"fecha\": \"2025-11-22T10:30:00\",\n    \"monto\": 45.50,\n    \"userId\": \"507f1f77bcf86cd799439011\"\n}"
+						},
+						{
+							"name": "Ingreso Creado",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"tipoTransaccion\": \"INGRESO\",\n    \"categoriaId\": \"507f1f77bcf86cd799439012\",\n    \"descripcion\": \"Salario mensual\",\n    \"fecha\": \"2025-11-01T00:00:00\",\n    \"monto\": 2500.00\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/transacciones/usuario/{{userId}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"transacciones",
+										"usuario",
+										"{{userId}}"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"id\": \"507f1f77bcf86cd799439016\",\n    \"tipoTransaccion\": \"INGRESO\",\n    \"categoriaId\": \"507f1f77bcf86cd799439012\",\n    \"categoriaNombre\": \"Salario\",\n    \"descripcion\": \"Salario mensual\",\n    \"fecha\": \"2025-11-01T00:00:00\",\n    \"monto\": 2500.00,\n    \"userId\": \"507f1f77bcf86cd799439011\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Obtener Transacciones por Usuario",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/transacciones/usuario/{{userId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"transacciones",
+								"usuario",
+								"{{userId}}"
+							]
+						},
+						"description": "Retorna todas las transacciones de un usuario."
+					},
+					"response": []
+				},
+				{
+					"name": "Filtrar por Tipo (INGRESO)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/transacciones/usuario/{{userId}}/tipo/INGRESO",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"transacciones",
+								"usuario",
+								"{{userId}}",
+								"tipo",
+								"INGRESO"
+							]
+						},
+						"description": "Filtra transacciones por tipo (INGRESO o GASTO)."
+					},
+					"response": []
+				},
+				{
+					"name": "Filtrar por Tipo (GASTO)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/transacciones/usuario/{{userId}}/tipo/GASTO",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"transacciones",
+								"usuario",
+								"{{userId}}",
+								"tipo",
+								"GASTO"
+							]
+						},
+						"description": "Retorna solo los gastos del usuario."
+					},
+					"response": []
+				},
+				{
+					"name": "Filtrar por Categoría",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/transacciones/usuario/{{userId}}/categoria/{{categoriaId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"transacciones",
+								"usuario",
+								"{{userId}}",
+								"categoria",
+								"{{categoriaId}}"
+							]
+						},
+						"description": "Filtra transacciones por categoría específica."
+					},
+					"response": []
+				},
+				{
+					"name": "Filtrar por Rango de Fechas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/transacciones/usuario/{{userId}}/fecha?fechaInicio=2025-11-01T00:00:00&fechaFin=2025-11-30T23:59:59",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"transacciones",
+								"usuario",
+								"{{userId}}",
+								"fecha"
+							],
+							"query": [
+								{
+									"key": "fechaInicio",
+									"value": "2025-11-01T00:00:00",
+									"description": "Fecha inicio (ISO 8601)"
+								},
+								{
+									"key": "fechaFin",
+									"value": "2025-11-30T23:59:59",
+									"description": "Fecha fin (ISO 8601)"
+								}
+							]
+						},
+						"description": "Filtra transacciones entre dos fechas.\n\n**Formato:** ISO 8601 (yyyy-MM-dd'T'HH:mm:ss)"
+					},
+					"response": []
+				},
+				{
+					"name": "Resumen General",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/transacciones/usuario/{{userId}}/resumen",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"transacciones",
+								"usuario",
+								"{{userId}}",
+								"resumen"
+							]
+						},
+						"description": "Calcula el resumen financiero general del usuario:\n- Total ingresos\n- Total gastos\n- Balance\n- Cantidad de transacciones"
+					},
+					"response": [
+						{
+							"name": "Resumen Exitoso",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/transacciones/usuario/{{userId}}/resumen",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"transacciones",
+										"usuario",
+										"{{userId}}",
+										"resumen"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"totalIngresos\": 5000.00,\n    \"totalGastos\": 3250.75,\n    \"balance\": 1749.25,\n    \"cantidadIngresos\": 5,\n    \"cantidadGastos\": 23\n}"
+						}
+					]
+				},
+				{
+					"name": "Resumen por Periodo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/transacciones/usuario/{{userId}}/resumen/periodo?fechaInicio=2025-11-01T00:00:00&fechaFin=2025-11-30T23:59:59",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"transacciones",
+								"usuario",
+								"{{userId}}",
+								"resumen",
+								"periodo"
+							],
+							"query": [
+								{
+									"key": "fechaInicio",
+									"value": "2025-11-01T00:00:00"
+								},
+								{
+									"key": "fechaFin",
+									"value": "2025-11-30T23:59:59"
+								}
+							]
+						},
+						"description": "Calcula el resumen financiero para un rango de fechas específico."
+					},
+					"response": [
+						{
+							"name": "Resumen Mensual",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/transacciones/usuario/{{userId}}/resumen/periodo?fechaInicio=2025-11-01T00:00:00&fechaFin=2025-11-30T23:59:59",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"transacciones",
+										"usuario",
+										"{{userId}}",
+										"resumen",
+										"periodo"
+									],
+									"query": [
+										{
+											"key": "fechaInicio",
+											"value": "2025-11-01T00:00:00"
+										},
+										{
+											"key": "fechaFin",
+											"value": "2025-11-30T23:59:59"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"totalIngresos\": 2500.00,\n    \"totalGastos\": 1850.50,\n    \"balance\": 649.50,\n    \"cantidadIngresos\": 2,\n    \"cantidadGastos\": 15,\n    \"periodo\": \"2025-11-01 a 2025-11-30\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Actualizar Transacción",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tipoTransaccion\": \"GASTO\",\n    \"categoriaId\": \"{{categoriaId}}\",\n    \"descripcion\": \"Compra actualizada en supermercado\",\n    \"fecha\": \"2025-11-22T10:30:00\",\n    \"monto\": 52.00\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/transacciones/{{transaccionId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"transacciones",
+								"{{transaccionId}}"
+							]
+						},
+						"description": "Actualiza los datos de una transacción existente."
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Transacción",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/transacciones/{{transaccionId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"transacciones",
+								"{{transaccionId}}"
+							]
+						},
+						"description": "Elimina una transacción del sistema."
+					},
+					"response": []
+				}
+			],
+			"description": "Gestión completa de transacciones con filtros avanzados y resúmenes financieros."
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080/api",
+			"type": "string"
+		}
+	]
+}
